@@ -19,6 +19,8 @@ region_locale = {
     'eu': ['eu', 'en_GB', 'en']
 }
 
+server_locale = 'thrall'
+
 def get_sockets(player_dictionary):
     """
     Return dict with total sockets and count of equipped gems and slots that are missing
@@ -199,7 +201,7 @@ async def pug(client, region, api_key, message):
     try:
         i = str(message.content).split(' ')
         name = i[1]
-        server = "thrall"
+        server = i[2]
         if len(i) == 4 and i[3].lower() in region_locale.keys():
             target_region = i[3].lower()
         character_info = get_char(name, server, target_region, api_key)
