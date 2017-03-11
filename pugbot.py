@@ -32,7 +32,7 @@ async def on_ready():
 async def on_message(message):
 
     if message.content.startswith('!info') or message.content.startswith('!help'):
-        await CLIENT.send_message(message.channel, "I'm PugBotTEST, the pug analyzer!\n"
+        await CLIENT.send_message(message.channel, "I'm PugBot, the pug analyzer!\n"
                                                    "Use: !pug <name> <server> <region> \n"
                                                    "Example: !pug Basimot Lightbringer us")
 
