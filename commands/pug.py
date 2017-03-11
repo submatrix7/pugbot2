@@ -201,7 +201,7 @@ async def pug(client, region, api_key, message):
     try:
         i = str(message.content).split(' ')
         name = i[1]
-        server = i[2]
+        server = 'thrall'
         if len(i) == 4 and i[3].lower() in region_locale.keys():
             target_region = i[3].lower()
         character_info = get_char(name, server, target_region, api_key)
