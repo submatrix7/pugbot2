@@ -146,18 +146,18 @@ def get_char(name, server, target_region, api_key):
     return_string += '```'  # end Markdown
     return return_string
 
-async def pug(client, region, api_key, message):
+async def pug(client, region, api_key, message2):
     target_region = region
     try:
-        i = str(message.content).split(' ')
+        i = str(message2.content).split(' ')
         name = i[1]
         server = i[2]
         if len(i) == 4 and i[3].lower() in region_locale.keys():
             target_region = i[3].lower()
         character_info = get_char(name, server, target_region, api_key)
-        await client.send_message(message.channel, character_info)
+        await client.send_message(message2.channel, character_info)
     except Exception as e:
         print(e)
-        await client.send_message(message.channel, "Error With Name or Server\n"
+        await client.send_message(message2.channel, "Error With Name or Server\n"
                                                    "Use: !pug <name> <server> <region>\n"
                                                    "Hyphenate Two Word Servers (Ex: Twisting-Nether)")
