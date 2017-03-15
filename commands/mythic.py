@@ -88,8 +88,8 @@ def get_mythic_progression(player_dictionary):
         index = achievements["criteria"].index(33098)
         plus_ten = achievements["criteriaQuantity"][index]
         
-    if 33099 in achievements["criteria"]:
-        index = achievements["criteria"].index(33099)
+    if 32028 in achievements["criteria"]:
+        index = achievements["criteria"].index(32028)
         plus_fifteen = achievements["criteriaQuantity"][index]
 
     return {
@@ -127,10 +127,11 @@ def get_char(name, server, target_region, api_key):
     return_string += "Equipped Item Level: %s\n" % equipped_ivl
 
     # Mythic Progression
-    return_string += "Mythics: +2: %s, +5: %s, +10: %s\n" % (mythic_progress["plus_two"],
-                                                             mythic_progress["plus_five"],
-                                                             mythic_progress["plus_ten"],
-                                                             mythic_progress["plus_fifteen"])
+    # Mythic Progression
+    return_string += "Mythics: +2: %s, +5: %s, +10: %s, +15: %s\n" % (mythic_progress["plus_two"],
+                                                                      mythic_progress["plus_five"],
+                                                                      mythic_progress["plus_ten"],
+                                                                      mythic_progress["plus_fifteen"])
 
     # Gems
     return_string += "Gems Equipped: %s/%s\n" % (
@@ -146,18 +147,18 @@ def get_char(name, server, target_region, api_key):
     return_string += '```'  # end Markdown
     return return_string
 
-async def pug(client, region, api_key, message2):
+async def pug(client, region, api_key, message):
     target_region = region
     try:
-        i = str(message2.content).split(' ')
+        i = str(message.content).split(' ')
         name = i[1]
         server = i[2]
         if len(i) == 4 and i[3].lower() in region_locale.keys():
             target_region = i[3].lower()
         character_info = get_char(name, server, target_region, api_key)
-        await client.send_message(message2.channel, character_info)
+        await client.send_message(message.channel, character_info)
     except Exception as e:
         print(e)
-        await client.send_message(message2.channel, "Error With Name or Server\n"
+        await client.send_message(message.channel, "Error With Name or Server\n"
                                                    "Use: !pug <name> <server> <region>\n"
                                                    "Hyphenate Two Word Servers (Ex: Twisting-Nether)")
