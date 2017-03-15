@@ -19,8 +19,6 @@ region_locale = {
     'eu': ['eu', 'en_GB', 'en']
 }
 
-server_locale = 'thrall'
-
 def get_sockets(player_dictionary):
     """
     Return dict with total sockets and count of equipped gems and slots that are missing
@@ -174,7 +172,8 @@ def get_char(name, server, target_region, api_key):
     # Mythic Progression
     return_string += "Mythics: +2: %s, +5: %s, +10: %s\n" % (mythic_progress["plus_two"],
                                                              mythic_progress["plus_five"],
-                                                             mythic_progress["plus_ten"])
+                                                             mythic_progress["plus_ten"],
+                                                             mythic_progress["plus_fifteen"])
 
     # Raid Progression
     for raid, data in raid_progress.items():
