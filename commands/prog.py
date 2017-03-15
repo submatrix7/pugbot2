@@ -171,7 +171,7 @@ def get_char(name, server, target_region, api_key):
     return_string += '```'  # end Markdown
     return return_string
 
-async def pug(client, region, api_key, message):
+async def prog(client, region, api_key, message):
     target_region = region
     try:
         i = str(message.content).split(' ')
