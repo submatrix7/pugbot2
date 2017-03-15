@@ -1,5 +1,4 @@
 import json
-
 import requests
 
 LEG_WITH_SOCKET = [
@@ -10,7 +9,6 @@ LEG_WITH_SOCKET = [
 
 ENCHANTABLE_SLOTS = ["neck", "back", "finger1", "finger2"]
 RAIDS = [('The Emerald Nightmare', 'EN'), ('Trial of Valor', 'TOV'), ('The Nighthold', 'NH')]
-
 
 region_locale = {
     'us': ['us', 'en_US', 'en'],
@@ -71,33 +69,12 @@ def get_enchants(player_dictionary):
         "total_missing": len(missing_enchant_slots)
     }
 
-
-def get_raid_progression(player_dictionary, raid):
-    r = [x for x in player_dictionary["progression"]
-    ["raids"] if x["name"] in raid][0]
-    normal = 0
-    heroic = 0
-    mythic = 0
-
-    for boss in r["bosses"]:
-        if boss["normalKills"] > 0:
-            normal += 1
-        if boss["heroicKills"] > 0:
-            heroic += 1
-        if boss["mythicKills"] > 0:
-            mythic += 1
-
-    return {"normal": normal,
-            "heroic": heroic,
-            "mythic": mythic,
-            "total_bosses": len(r["bosses"])}
-
-
 def get_mythic_progression(player_dictionary):
     achievements = player_dictionary["achievements"]
     plus_two = 0
     plus_five = 0
     plus_ten = 0
+    plus_fifteen = 0
 
     if 33096 in achievements["criteria"]:
         index = achievements["criteria"].index(33096)
@@ -110,11 +87,16 @@ def get_mythic_progression(player_dictionary):
     if 33098 in achievements["criteria"]:
         index = achievements["criteria"].index(33098)
         plus_ten = achievements["criteriaQuantity"][index]
+        
+    if 33099 in achievements["criteria"]:
+        index = achievements["criteria"].index(33099)
+        plus_fifteen = achievements["criteriaQuantity"][index]
 
     return {
         "plus_two": plus_two,
         "plus_five": plus_five,
-        "plus_ten": plus_ten
+        "plus_ten": plus_ten,
+        "plus_fifteen": plus_fifteen
     }
 
 
@@ -141,43 +123,14 @@ def get_char(name, server, target_region, api_key):
 
     mythic_progress = get_mythic_progression(player_dict)
 
-    # Build raid progression
-    raid_progress = {}
-    for raid in RAIDS:
-        raid_name = raid[0]
-        raid_abrv = raid[1]
-        raid_progress[raid_name] = {
-            'abrv': raid_abrv,
-            'progress': get_raid_progression(player_dict, raid_name)
-        }
-
-    armory_url = 'http://{}.battle.net/wow/{}/character/{}/{}/advanced'.format(
-        region_locale[target_region][0], region_locale[target_region][2], server, name)
-
-    return_string = ''
-    return_string += "**%s** - **%s** - **%s %s**\n" % (
-        name.title(), server.title(), player_dict['level'], class_dict[player_dict['class']])
-    return_string += '<{}>\n'.format(armory_url)
-    return_string += '```CSS\n'  # start Markdown
-
     # iLvL
     return_string += "Equipped Item Level: %s\n" % equipped_ivl
 
     # Mythic Progression
     return_string += "Mythics: +2: %s, +5: %s, +10: %s\n" % (mythic_progress["plus_two"],
                                                              mythic_progress["plus_five"],
-                                                             mythic_progress["plus_ten"])
-
-    # Raid Progression
-    for raid, data in raid_progress.items():
-        progress = data['progress']
-        return_string += '{abrv}: {normal}/{total} (N), {heroic}/{total} (H), {mythic}/{total} (M)\n'.format(
-            abrv=data['abrv'],
-            normal=progress['normal'],
-            heroic=progress['heroic'],
-            mythic=progress['mythic'],
-            total=progress['total_bosses']
-        )
+                                                             mythic_progress["plus_ten"],
+                                                             mythic_progress["plus_fifteen"])
 
     # Gems
     return_string += "Gems Equipped: %s/%s\n" % (
@@ -192,7 +145,6 @@ def get_char(name, server, target_region, api_key):
 
     return_string += '```'  # end Markdown
     return return_string
-
 
 async def pug(client, region, api_key, message):
     target_region = region
