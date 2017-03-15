@@ -4,7 +4,7 @@ import discord
 
 # Commands #
 from commands.pug import pug
-#from commands.mythic import mythic
+from commands.pug import mythic
 
 CLIENT = discord.Client()
 
