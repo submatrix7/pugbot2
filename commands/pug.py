@@ -1,5 +1,4 @@
 import json
-
 import requests
 
 LEG_WITH_SOCKET = [
@@ -11,13 +10,7 @@ LEG_WITH_SOCKET = [
 ENCHANTABLE_SLOTS = ["neck", "back", "finger1", "finger2"]
 RAIDS = [('The Emerald Nightmare', 'EN'), ('Trial of Valor', 'TOV'), ('The Nighthold', 'NH')]
 
-
-region_locale = {
-    'us': ['us', 'en_US', 'en'],
-#    'kr': ['kr', 'ko_KR', 'ko'],
-#    'tw': ['tw', 'zh_TW', 'zh'],
-    'eu': ['eu', 'en_GB', 'en']
-}
+region_locale = {'us': ['us', 'en_US', 'en']}
 
 def get_sockets(player_dictionary):
     """
@@ -32,27 +25,22 @@ def get_sockets(player_dictionary):
     for item in player_dictionary["items"]:
         if item in "averageItemLevel" or item in "averageItemLevelEquipped":
             continue
-
         if int(player_dictionary["items"][item]["id"]) in LEG_WITH_SOCKET:
             sockets += 1
         else:
             for bonus in player_dictionary["items"][item]["bonusLists"]:
                 if bonus == 1808:  # 1808 is Legion prismatic socket bonus
                     sockets += 1
-
             if item in ["neck", "finger1", "finger2"]:
                 if player_dictionary["items"][item]["context"] == "trade-skill":
                     sockets += 1
-
         for ttip in player_dictionary["items"][item]["tooltipParams"]:
             if item in "mainHand" or item in "offHand":  # Ignore Relic
                 continue
             if "gem" in ttip:  # Equipped gems are listed as gem0, gem1, etc...
                 equipped_gems += 1
-
     return {"total_sockets": sockets,
             "equipped_gems": equipped_gems}
-
 
 def get_enchants(player_dictionary):
     """
@@ -64,13 +52,11 @@ def get_enchants(player_dictionary):
     for slot in ENCHANTABLE_SLOTS:
         if "enchant" not in player_dictionary["items"][slot]["tooltipParams"]:
             missing_enchant_slots.append(slot)
-
     return {
         "enchantable_slots": len(ENCHANTABLE_SLOTS),
         "missing_slots": missing_enchant_slots,
         "total_missing": len(missing_enchant_slots)
     }
-
 
 def get_raid_progression(player_dictionary, raid):
     r = [x for x in player_dictionary["progression"]
@@ -78,7 +64,6 @@ def get_raid_progression(player_dictionary, raid):
     normal = 0
     heroic = 0
     mythic = 0
-
     for boss in r["bosses"]:
         if boss["normalKills"] > 0:
             normal += 1
@@ -86,12 +71,10 @@ def get_raid_progression(player_dictionary, raid):
             heroic += 1
         if boss["mythicKills"] > 0:
             mythic += 1
-
     return {"normal": normal,
             "heroic": heroic,
             "mythic": mythic,
             "total_bosses": len(r["bosses"])}
-
 
 def get_mythic_progression(player_dictionary):
     achievements = player_dictionary["achievements"]
@@ -103,26 +86,21 @@ def get_mythic_progression(player_dictionary):
     if 33096 in achievements["criteria"]:
         index = achievements["criteria"].index(33096)
         plus_two = achievements["criteriaQuantity"][index]
-
     if 33097 in achievements["criteria"]:
         index = achievements["criteria"].index(33097)
         plus_five = achievements["criteriaQuantity"][index]
-
     if 33098 in achievements["criteria"]:
         index = achievements["criteria"].index(33098)
         plus_ten = achievements["criteriaQuantity"][index]
-        
     if 32028 in achievements["criteria"]:
         index = achievements["criteria"].index(32028)
         plus_fifteen = achievements["criteriaQuantity"][index]
-
     return {
         "plus_two": plus_two,
         "plus_five": plus_five,
         "plus_ten": plus_ten,
         "plus_fifteen": plus_fifteen
     }
-
 
 def get_char(name, server, target_region, api_key):
     r = requests.get("https://%s.api.battle.net/wow/character/%s/%s?fields=items+progression+achievements&locale=%s&apikey=%s" % (
@@ -156,10 +134,8 @@ def get_char(name, server, target_region, api_key):
             'abrv': raid_abrv,
             'progress': get_raid_progression(player_dict, raid_name)
         }
-
     armory_url = 'http://{}.battle.net/wow/{}/character/{}/{}/advanced'.format(
         region_locale[target_region][0], region_locale[target_region][2], server, name)
-
     return_string = ''
     return_string += "**%s** - **%s** - **%s %s**\n" % (
         name.title(), server.title(), player_dict['level'], class_dict[player_dict['class']])
@@ -196,10 +172,8 @@ def get_char(name, server, target_region, api_key):
     if enchants["total_missing"] > 0:
         return_string += "Missing Enchants: {0}".format(
             ", ".join(enchants["missing_slots"]))
-
     return_string += '```'  # end Markdown
     return return_string
-
 
 async def pug(client, region, api_key, message):
     target_region = region
