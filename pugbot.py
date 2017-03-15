@@ -36,7 +36,9 @@ async def on_message(message):
         await pug(CLIENT, DEFAULT_REGION, BLIZZARD_API_KEY, message)
         
     if message.content.startswith('!mythic'):
+        await CLIENT.send_message(message.channel, "Test 1 - Starting")
         await mythic(CLIENT, DEFAULT_REGION, BLIZZARD_API_KEY, message)
+        await CLIENT.send_message(message.channel, "Test 2 - Complete")
 
 if __name__ == '__main__':
     BLIZZARD_API_KEY = config_value('blizzard_api_key')
