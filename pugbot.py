@@ -1,24 +1,21 @@
 import json
 import os
-
 import discord
 
 # Commands #
 from commands.pug import pug
+from commands.mythic import mythic
 
 CLIENT = discord.Client()
-
 
 def config_value(key):
     with open(os.path.join(os.path.dirname(__file__), 'config.json')) as config_file:
         config = json.load(config_file)
-
     try:
         value = os.environ[key.upper()]
     except KeyError:
         value = config.get(key)
     return value
-
 
 @CLIENT.event
 async def on_ready():
@@ -26,7 +23,6 @@ async def on_ready():
     print(CLIENT.user.name)
     print(CLIENT.user.id)
     print('------')
-
 
 @CLIENT.event
 async def on_message(message):
@@ -38,7 +34,9 @@ async def on_message(message):
 
     if message.content.startswith('!pug'):
         await pug(CLIENT, DEFAULT_REGION, BLIZZARD_API_KEY, message)
-
+        
+    if message.content.startswith('!mythic'):
+        await pug(CLIENT, DEFAULT_REGION, BLIZZARD_API_KEY, message2)
 
 if __name__ == '__main__':
     BLIZZARD_API_KEY = config_value('blizzard_api_key')
