@@ -3,7 +3,7 @@ import os
 import discord
 
 # Commands #
-from commands.pug import pug
+from commands.prog import prog
 from commands.pug import mythic
 
 CLIENT = discord.Client()
