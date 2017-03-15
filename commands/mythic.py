@@ -30,27 +30,22 @@ def get_sockets(player_dictionary):
     for item in player_dictionary["items"]:
         if item in "averageItemLevel" or item in "averageItemLevelEquipped":
             continue
-
         if int(player_dictionary["items"][item]["id"]) in LEG_WITH_SOCKET:
             sockets += 1
         else:
             for bonus in player_dictionary["items"][item]["bonusLists"]:
                 if bonus == 1808:  # 1808 is Legion prismatic socket bonus
                     sockets += 1
-
             if item in ["neck", "finger1", "finger2"]:
                 if player_dictionary["items"][item]["context"] == "trade-skill":
                     sockets += 1
-
         for ttip in player_dictionary["items"][item]["tooltipParams"]:
             if item in "mainHand" or item in "offHand":  # Ignore Relic
                 continue
             if "gem" in ttip:  # Equipped gems are listed as gem0, gem1, etc...
                 equipped_gems += 1
-
     return {"total_sockets": sockets,
             "equipped_gems": equipped_gems}
-
 
 def get_enchants(player_dictionary):
     """
@@ -62,7 +57,6 @@ def get_enchants(player_dictionary):
     for slot in ENCHANTABLE_SLOTS:
         if "enchant" not in player_dictionary["items"][slot]["tooltipParams"]:
             missing_enchant_slots.append(slot)
-
     return {
         "enchantable_slots": len(ENCHANTABLE_SLOTS),
         "missing_slots": missing_enchant_slots,
@@ -79,19 +73,15 @@ def get_mythic_progression(player_dictionary):
     if 33096 in achievements["criteria"]:
         index = achievements["criteria"].index(33096)
         plus_two = achievements["criteriaQuantity"][index]
-
     if 33097 in achievements["criteria"]:
         index = achievements["criteria"].index(33097)
         plus_five = achievements["criteriaQuantity"][index]
-
     if 33098 in achievements["criteria"]:
         index = achievements["criteria"].index(33098)
         plus_ten = achievements["criteriaQuantity"][index]
-        
     if 32028 in achievements["criteria"]:
         index = achievements["criteria"].index(32028)
         plus_fifteen = achievements["criteriaQuantity"][index]
-
     return {
         "plus_two": plus_two,
         "plus_five": plus_five,
@@ -99,16 +89,12 @@ def get_mythic_progression(player_dictionary):
         "plus_fifteen": plus_fifteen
     }
 
-
 def get_char(name, server, target_region, api_key):
     r = requests.get("https://%s.api.battle.net/wow/character/%s/%s?fields=items+progression+achievements&locale=%s&apikey=%s" % (
             region_locale[target_region][0], server, name, region_locale[target_region][1], api_key))
-
     if r.status_code != 200:
         raise Exception("Could Not Find Character (No 200 from API)")
-
     player_dict = json.loads(r.text)
-
     r = requests.get(
         "https://%s.api.battle.net/wow/data/character/classes?locale=%s&apikey=%s" % (
             region_locale[target_region][0], region_locale[target_region][1], api_key))
@@ -116,17 +102,14 @@ def get_char(name, server, target_region, api_key):
         raise Exception("Could Not Find Character Classes (No 200 From API)")
     class_dict = json.loads(r.text)
     class_dict = {c['id']: c['name'] for c in class_dict["classes"]}
-
     equipped_ivl = player_dict["items"]["averageItemLevelEquipped"]
     sockets = get_sockets(player_dict)
     enchants = get_enchants(player_dict)
-
     mythic_progress = get_mythic_progression(player_dict)
 
     # iLvL
     return_string += "Equipped Item Level: %s\n" % equipped_ivl
 
-    # Mythic Progression
     # Mythic Progression
     return_string += "Mythics: +2: %s, +5: %s, +10: %s, +15: %s\n" % (mythic_progress["plus_two"],
                                                                       mythic_progress["plus_five"],
@@ -143,7 +126,6 @@ def get_char(name, server, target_region, api_key):
     if enchants["total_missing"] > 0:
         return_string += "Missing Enchants: {0}".format(
             ", ".join(enchants["missing_slots"]))
-
     return_string += '```'  # end Markdown
     return return_string
 
