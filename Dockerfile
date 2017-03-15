@@ -8,4 +8,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["python", "pugbot.py", "mythic.py"]
+CMD ["python", "pugbot.py"]
